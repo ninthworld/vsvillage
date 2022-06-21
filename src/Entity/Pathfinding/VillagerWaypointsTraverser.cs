@@ -46,9 +46,7 @@ namespace VsVillage
             villagerAstar = new VillagerAStar(entity.Api as ICoreServerAPI);
         }
 
-
-
-        public override bool NavigateTo(Vec3d target, float movingSpeed, float targetDistance, Action OnGoalReached, Action OnStuck, bool giveUpWhenNoPath = false, int searchDepth = 999, bool allowReachAlmost = false)
+        public override bool NavigateTo(Vec3d target, float movingSpeed, float targetDistance, Action OnGoalReached, Action OnStuck, bool giveUpWhenNoPath = false, int searchDepth = 999, int mhdistanceTolerance = 0)
         {
             BlockPos startBlockPos = entity.ServerPos.AsBlockPos;
             waypointToReachIndex = 0;
@@ -59,7 +57,7 @@ namespace VsVillage
 
             if (!entity.World.BlockAccessor.IsNotTraversable(startBlockPos))
             {
-                waypoints = villagerAstar.FindPathAsWaypoints(startBlockPos, target.AsBlockPos, canFallDamage ? 8 : 4, stepHeight, entity.CollisionBox, searchDepth, allowReachAlmost);
+                waypoints = villagerAstar.FindPathAsWaypoints(startBlockPos, target.AsBlockPos, canFallDamage ? 8 : 4, stepHeight, entity.CollisionBox, searchDepth, mhdistanceTolerance);
             }
 
             bool nopath = false;
@@ -298,8 +296,9 @@ namespace VsVillage
             return false;
         }
 
-        private void handleDoor(Block block, BlockPos pos)
+        private void handleDoor(Block block, int x, int y, int z)
         {
+            var pos = new BlockPos(x, y, z);
             var targetBlock = entity.World.BlockAccessor.GetBlock(pos) as BlockBaseDoor;
             if (targetBlock != null)
             {

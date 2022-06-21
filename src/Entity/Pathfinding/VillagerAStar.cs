@@ -31,13 +31,13 @@ namespace VsVillage
         public PathNodeSet openSet = new PathNodeSet();
         public HashSet<PathNode> closedSet = new HashSet<PathNode>();
 
-        public List<Vec3d> FindPathAsWaypoints(BlockPos start, BlockPos end, int maxFallHeight, float stepHeight, Cuboidf entityCollBox, int searchDepth = 9999, bool allowReachAlmost = false)
+        public List<Vec3d> FindPathAsWaypoints(BlockPos start, BlockPos end, int maxFallHeight, float stepHeight, Cuboidf entityCollBox, int searchDepth = 9999, int mhdistanceTolerance = 0)
         {
-            List<PathNode> nodes = FindPath(start, end, maxFallHeight, stepHeight, entityCollBox, searchDepth, allowReachAlmost);
+            List<PathNode> nodes = FindPath(start, end, maxFallHeight, stepHeight, entityCollBox, searchDepth, mhdistanceTolerance);
             return nodes == null ? null : ToWaypoints(nodes);
         }
 
-        public List<PathNode> FindPath(BlockPos start, BlockPos end, int maxFallHeight, float stepHeight, Cuboidf entityCollBox, int searchDepth = 9999, bool allowReachAlmost = false)
+        public List<PathNode> FindPath(BlockPos start, BlockPos end, int maxFallHeight, float stepHeight, Cuboidf entityCollBox, int searchDepth = 9999, int mhdistanceTolerance = 0)
         {
             blockAccess.Begin();
 
@@ -58,7 +58,7 @@ namespace VsVillage
                 PathNode nearestNode = openSet.RemoveNearest();
                 closedSet.Add(nearestNode);
 
-                if (nearestNode == targetNode || (allowReachAlmost && Math.Abs(nearestNode.X - targetNode.X) <= 1 && Math.Abs(nearestNode.Z - targetNode.Z) <= 1 && Math.Abs(nearestNode.Y - targetNode.Y) <= 2))
+                if (nearestNode == targetNode || (Math.Abs(nearestNode.X - targetNode.X) <= mhdistanceTolerance && Math.Abs(nearestNode.Z - targetNode.Z) <= mhdistanceTolerance && Math.Abs(nearestNode.Y - targetNode.Y) <= mhdistanceTolerance))
                 {
                     return retracePath(startNode, nearestNode);
                 }
